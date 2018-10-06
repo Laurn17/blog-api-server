@@ -1,19 +1,20 @@
 "use strict";
 
 const mongoose = require("mongoose");
+mongoose.Promise = global.Promise;
 
 const blogPostSchema = mongoose.Schema({
 	title: {type: String, required: true},
 	content: {type: String, required: true},
-	author: [{
+	author: {
 		firstName: {type: String, required: true},
 		lastName: {type: String, required: true}
-	}],
-	created: Date
+	},
+	created: {type: Date, default: Date.now}
 });
 
 blogPostSchema.virtual("fullName").get(function() {
-	return `${this.author.firstName} ${this.author.lastName}`;
+	return `${this.author.firstName} ${this.author.lastName}`.trim();
 });
 
 blogPostSchema.methods.serialize = function() {
@@ -22,7 +23,7 @@ blogPostSchema.methods.serialize = function() {
 		title: this.title,
 		content: this.content,
 		author: this.fullName,
-		created: Date.now()
+		created: this.created
 	};
 };
 
