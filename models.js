@@ -3,6 +3,15 @@
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 
+const authorSchema = mongoose.Schema({
+	firstName: 'string',
+	lastName: 'string',
+	userName: {
+		type: 'string',
+		unique: true
+	}
+});
+
 const blogPostSchema = mongoose.Schema({
 	title: {type: String, required: true},
 	content: {type: String, required: true},
