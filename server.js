@@ -83,7 +83,8 @@ app.post("/authors", (req, res) => {
 				return res.status(400).send(message);
 			}
 			else {
-				Author.create({
+				Author
+				.create({
 					firstName: req.body.firstName,
 					lastName: req.body.lastName,
 					userName: req.body.userName
@@ -149,7 +150,7 @@ app.put("/authors/:id", (req, res) => {
     	.findOne({ userName: toUpdate.userName || '', _id: { $ne: req.params.id } })
     	.then(author => {
       		if (author) {
-        	const message = `Username already taken`;
+        	const message = `Username already taken or id does not exist`;
         	console.error(message);
         	return res.status(400).send(message);
       		}
@@ -204,13 +205,13 @@ app.put("/blogs/:id", (req, res) => {
 app.delete('/authors/:id', (req, res) => {
   BlogPost
     .remove({ author: req.params.id })
-    .then(() => {
+    .then(function() {
       Author
         .findByIdAndRemove(req.params.id)
-        .then(() => {
+        .then(function() {
           console.log(`Deleted blog posts owned by and author with id \`${req.params.id}\``);
           res.status(204).json({ message: 'success' });
-        });
+        })
     })
     .catch(err => {
       console.error(err);
