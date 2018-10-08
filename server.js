@@ -39,7 +39,7 @@ app.get("/blogs", (req, res) => {
 		.populate('author')
 		.then(function(blogs) {
 			res.json({
-				blogs: blogs.map(blogs => blogs.serialize())
+				blogs: blogs.map(blog => blog.serialize())
 			});
 		})
 		.catch(function(err) {
@@ -52,8 +52,8 @@ app.get("/blogs", (req, res) => {
 app.get("/blogs/:id", (req, res) => {
 	BlogPost.findById(req.params.id)
 		.populate('author')
-		.then(function(blogs) {
-			res.json(blogs.serialize())
+		.then(function(blog) {
+			res.json(blog.serialize())
 		})
 		.catch(function(err) {
 			console.error(err);
@@ -115,21 +115,35 @@ app.post("/blogs", (req, res) => {
 			return res.status(400).send(message);
 		}
 	}
-
-	BlogPost.create({
-		title: req.body.title,
-		content: req.body.content,
-		author: req.body.author,
-		created: Date.now()
-	})
-	.populate("author")
-	.then(function(blog) {
-		res.status(201).json(blog.serialize())
-	})
-	.catch(function(err) {
-		console.error(err);
-		res.status(500).json({message: "Internal server error"});
-	});
+	Author
+		.findById(req.body.author_id)
+		.then(author => {
+			if (author) {
+				BlogPost
+				.create({
+					title: req.body.title,
+					content: req.body.content,
+					author: req.body.id,
+					created: Date.now()
+				})
+				.then(function(blog) {
+					res.status(201).json(blog.serialize())
+				})
+				.catch(function(err) {
+					console.error(err);
+					res.status(500).json({message: "Internal server error"});
+				});
+			}
+			else {
+				const message = `Author not found`;
+				console.error(message);
+				res.status(400).send(message);
+			}
+		})
+		.catch(err => {
+      		console.error(err);
+      		res.status(500).json({ error: 'something went horribly awry' });
+    	});
 });
 
 // UPDATE AN AUTHOR

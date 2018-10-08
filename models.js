@@ -3,7 +3,7 @@
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 
-var authorSchema = new mongoose.Schema({
+var authorSchema = mongoose.Schema({
 	firstName: {type: String, required: true},
 	lastName: {type: String, required: true},
 	userName: {
@@ -14,7 +14,7 @@ var authorSchema = new mongoose.Schema({
 
 var commentSchema = mongoose.Schema({ content: 'string' });
 
-const blogPostSchema = new mongoose.Schema({
+const blogPostSchema = mongoose.Schema({
 	title: {type: String, required: true},
 	content: {type: String, required: true},
 	author: { type: mongoose.Schema.Types.ObjectId, ref: 'Author' },
@@ -32,17 +32,22 @@ blogPostSchema.pre('findOne', function(next) {
   next();
 });
 
+// THIS IS TARGETING AUTHOR WRONG
 blogPostSchema.virtual("fullName").get(function() {
 	return `${this.author.firstName} ${this.author.lastName}`.trim();
 });
+
+// authorSchema.virtual("fullname").get(function() {
+// 	return `${this.firstName} ${this.lastName}`.trim();
+// }
+
 
 blogPostSchema.methods.serialize = function() {
 	return {
 		id: this._id,
 		title: this.title,
 		content: this.content,
-		author: this.fullName,
-		created: this.created,
+		author: this.fullName, 
 		comments: this.comments
 	};
 };
