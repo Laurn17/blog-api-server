@@ -19,10 +19,10 @@ app.get("/authors", (req, res) => {
 	Author.find()
 		.then(function(authors) {
 			res.json(
-				authors.map(authors => {
+				authors.map(author => {
 					return {
 						id: author._id,
-						name: this.fullName,
+						name: `${author.firstName} ${author.lastName}`,
 						userName: author.userName
 					};
 				}));
@@ -36,7 +36,7 @@ app.get("/authors", (req, res) => {
 // GET ALL BLOGS
 app.get("/blogs", (req, res) => {
 	BlogPost.find()
-		.populate('author.id')
+		.populate('author')
 		.then(function(blogs) {
 			res.json({
 				blogs: blogs.map(blogs => blogs.serialize())
@@ -51,7 +51,7 @@ app.get("/blogs", (req, res) => {
 // GET A BLOG POST BY ID
 app.get("/blogs/:id", (req, res) => {
 	BlogPost.findById(req.params.id)
-		.populate('authors')
+		.populate('author')
 		.then(function(blogs) {
 			res.json(blogs.serialize())
 		})
@@ -121,7 +121,7 @@ app.post("/blogs", (req, res) => {
 		author: req.body.author,
 		created: Date.now()
 	})
-	.populate("authors")
+	.populate("author")
 	.then(function(blog) {
 		res.status(201).json(blog.serialize())
 	})

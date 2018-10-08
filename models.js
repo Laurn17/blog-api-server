@@ -3,9 +3,9 @@
 const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 
-var authorSchema = mongoose.Schema({
-	firstName: 'string',
-	lastName: 'string',
+var authorSchema = new mongoose.Schema({
+	firstName: {type: String, required: true},
+	lastName: {type: String, required: true},
 	userName: {
 		type: 'string',
 		unique: true
@@ -14,10 +14,10 @@ var authorSchema = mongoose.Schema({
 
 var commentSchema = mongoose.Schema({ content: 'string' });
 
-const blogPostSchema = mongoose.Schema({
+const blogPostSchema = new mongoose.Schema({
 	title: {type: String, required: true},
 	content: {type: String, required: true},
-	author: { type: mongoose.Schema.Types.ObjectId, ref: 'Author'},
+	author: { type: mongoose.Schema.Types.ObjectId, ref: 'Author' },
 	created: {type: Date, default: Date.now()},
 	comments: [commentSchema]
 });
@@ -50,5 +50,5 @@ blogPostSchema.methods.serialize = function() {
 var Author = mongoose.model("Authors", authorSchema);
 const BlogPost = mongoose.model("Blogs", blogPostSchema);
 
-module.exports = {Author};
-module.exports = {BlogPost};
+
+module.exports = {BlogPost, Author};
